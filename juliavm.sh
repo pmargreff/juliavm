@@ -11,7 +11,18 @@ juliavm_ls_remote() {
 }
 
 juliavm_install(){
-  echo "Success"
+  file='julia-'$1
+  url=$JULIAVM_JULIA_MIRROR'/releases/download/v'$1'/'$file'.tar.gz'
+  JULIAVM_DISTS_DIR=$PWD'/dists/'$1
+  
+  if [ -d "$JULIAVM_DISTS_DIR" ]; then
+    echo $JULIAVM_DISTS_DIR' already exist'
+  else
+    eval 'mkdir $JULIAVM_DISTS_DIR'
+    eval 'wget $url -P $JULIAVM_DISTS_DIR'
+    eval 'tar -xvzf $JULIAVM_DISTS_DIR/$file.tar.gz -C $JULIAVM_DISTS_DIR'
+    eval 'rm $JULIAVM_DISTS_DIR/$file.tar.gz'
+  fi
 }
 
 juliavm_version_is_available(){
