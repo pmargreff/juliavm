@@ -1,17 +1,32 @@
-#!/usr/bin/env bash
+#!/bin/bash          
 
 # Setup mirror location if not already set
 if [ -z "$JULIAVM_JULIA_MIRROR" ]; then
   export JULIAVM_JULIA_MIRROR="https://github.com/JuliaLang/julia"
 fi
 
-
 juliavm_ls_remote() {
   echo "List of versions avaliable for julia language:"
-  eval "git ls-remote -t $JULIAVM_JULIA_MIRROR | cut -d '/' -f 3 | cut -d '^' -f 1"
+  eval "git ls-remote -t $JULIAVM_JULIA_MIRROR | cut -d '/' -f 3 | cut -c 1 --complement |cut -d '^' -f 1"
+}
+
+juliavm_install(){
+  echo "Success"
+}
+
+juliavm_version_is_available(){
+  url=$JULIAVM_JULIA_MIRROR'/releases/download/v'$1'/julia-'$1'.tar.gz'
+  if eval "curl --output /dev/null --silent --head --fail \"$url\""; then
+    return 0
+  else
+    echo "Version $1 isn't available"
+    echo "You can list all available versions with ls-remote parameter"
+    return 1
+  fi
 }
 
 juliavm_help() {
+  echo "install x.y.z - install version"
   echo "ls-remote - list all remote versions"
   echo "ls - list all locale versions"
   echo "help - list all commands"
@@ -19,6 +34,11 @@ juliavm_help() {
 
 if [[ "$1" == 'ls-remote' ]]; then
   juliavm_ls_remote
+elif [[ "$1" == "install" ]]; then
+  if  juliavm_version_is_available $2 ; then
+    juliavm_install $2
+  fi
+  
 elif [[ "$1" == *"help"* ]]; then
   echo "Commands avaliable are: "
   juliavm_help
