@@ -30,16 +30,32 @@ juliavm_install(){
 }
 
 juliavm_use(){
-  echo 'oi'
+  DIR=$(juliavm_get_work_dir)
+  DIR="$DIR/dists/$1/bin/julia"
+  sed -i /'alias julia='/d  ~/.bashrc
+  echo "alias julia='$DIR'" >> ~/.bashrc && source ~/.bashrc
+  echo "You're now using Julia $1"
 }
 
 juliavm_ls(){
-  DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+  DIR=$(juliavm_get_work_dir)
   DIR="$DIR/dists/"
   eval 'ls -1 $DIR'
 }
 
-juliavm_version_is_available(){
+juliavm_version_is_available_locale(){
+  DIR=$(juliavm_get_work_dir)
+  DIR="$DIR/dists/$1"
+  if [ -d "$DIR" ]; then
+    return 0
+  else 
+    echo "Version isn't available, all version ready for use are: "
+    juliavm_ls
+    return 1
+  fi
+}
+
+juliavm_version_is_available_remote(){
   major=${1:0:3}'/'
   file='julia-'$1'-linux-x86_64'
   url=$JULIAVM_JULIA_AWS$major$file'.tar.gz'
@@ -47,9 +63,14 @@ juliavm_version_is_available(){
     return 0
   else
     echo "$url isn't available"
-    echo "You can list all available versions with ls-remote parameter"
+    echo "You can list all available versions with ls-remote"
     return 1
   fi
+}
+
+juliavm_get_work_dir(){
+  DIR=$( cd "$( dirname "$0" )" && pwd )
+  echo $DIR
 }
 
 juliavm_help() {
@@ -63,13 +84,15 @@ juliavm_help() {
 if [[ "$1" == 'ls-remote' ]]; then
   juliavm_ls_remote
 elif [[ "$1" == 'install' ]]; then
-  if  juliavm_version_is_available $2 ; then
+  if  juliavm_version_is_available_remote $2 ; then
     juliavm_install $2
   fi
 elif [[ "$1" == 'ls' ]]; then
   juliavm_ls $2
 elif [[ "$1" == 'use' ]]; then
-  juliavm_use $2
+  if  juliavm_version_is_available_locale $2 ; then
+    juliavm_use $2
+  fi
 elif [[ "$1" == *"help"* ]]; then
   echo "Commands avaliable are: "
   juliavm_help
