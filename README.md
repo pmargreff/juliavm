@@ -1,6 +1,8 @@
 # juliavm
 A Julia version manager
 
+JuliaVM is a command-line tool which allows you to easily install, manage, and work with multiple Julia environments and switch between them easily. It's inspired in [rvm](https://rvm.io/) and [nvm](https://github.com/creationix/nvm). 
+
 ## Install
 Clone the repo: 
 

@@ -17,7 +17,9 @@ juliavm_install(){
   major=${1:0:3}'/'
   file='julia-'$1'-linux-x86_64'
   url=$JULIAVM_JULIA_AWS$major$file'.tar.gz'
-  JULIAVM_DISTS_DIR=$PWD'/dists/'$1
+  DIR=$(juliavm_get_work_dir)
+
+  JULIAVM_DISTS_DIR=$DIR'/dists/'$1
   
   if [ -d "$JULIAVM_DISTS_DIR" ]; then
     echo $JULIAVM_DISTS_DIR' already exist'
@@ -27,6 +29,7 @@ juliavm_install(){
     eval 'tar -xvzf $JULIAVM_DISTS_DIR/$file.tar.gz -C $JULIAVM_DISTS_DIR --strip-components=1'
     eval 'rm $JULIAVM_DISTS_DIR/$file.tar.gz'
   fi
+  juliavm_use $1
 }
 
 juliavm_use(){
