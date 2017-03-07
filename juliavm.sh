@@ -33,8 +33,8 @@ juliavm_use(){
   DIR=$(juliavm_get_work_dir)
   DIR="$DIR/dists/$1/bin/julia"
   sed -i /'alias julia='/d  ~/.bashrc
-  echo "alias julia='$DIR'" >> ~/.bashrc && source ~/.bashrc
   echo "You're now using Julia $1"
+  echo "alias julia='$DIR'" >> ~/.bashrc && exec bash
 }
 
 juliavm_ls(){
@@ -68,6 +68,12 @@ juliavm_version_is_available_remote(){
   fi
 }
 
+juliavm_update(){
+  DIR=$(juliavm_get_work_dir)
+  eval 'cd $DIR && git pull origin master'
+  eval 'mv $DIR/juliavm.sh $DIR/juliavm'
+}
+
 juliavm_get_work_dir(){
   DIR=$( cd "$( dirname "$0" )" && pwd )
   echo $DIR
@@ -78,6 +84,7 @@ juliavm_help() {
   echo "use x.y.z - use x.y.x version"
   echo "ls-remote - list all remote versions"
   echo "ls - list all locale versions"
+  echo "update - update juliavm with latest resources"
   echo "help - list all commands"
 }
 
@@ -93,6 +100,8 @@ elif [[ "$1" == 'use' ]]; then
   if  juliavm_version_is_available_locale $2 ; then
     juliavm_use $2
   fi
+elif [[ "$1" == 'update' ]]; then
+  juliavm_update
 elif [[ "$1" == *"help"* ]]; then
   echo "Commands avaliable are: "
   juliavm_help
