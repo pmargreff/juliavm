@@ -1,7 +1,6 @@
 #!/bin/bash          
 
 DIR=$( cd "$( dirname "$0" )" && pwd )
-echo $DIR
 eval 'mkdir ~/.juliavm'
 eval 'mkdir ~/.juliavm/dists'
 eval 'cp $DIR/juliavm.sh ~/.juliavm/juliavm'
