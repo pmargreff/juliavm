@@ -9,7 +9,7 @@ if [ -z "$JULIAVM_JULIA_AWS" ]; then
 fi
 
 juliavm_ls_remote() {
-  echo "List of versions avaliable for julia language:"
+  echo "List of versions available for julia language:"
   eval "git ls-remote -t $JULIAVM_JULIA_REPO | cut -d '/' -f 3 | cut -c 1 --complement |cut -d '^' -f 1"
 }
 
@@ -80,12 +80,12 @@ juliavm_get_work_dir(){
 }
 
 juliavm_help() {
-  echo "install x.y.z - install x.y.x version"
-  echo "use x.y.z - use x.y.x version"
-  echo "ls-remote - list all remote versions"
-  echo "ls - list all locale versions"
-  echo "update - update juliavm with latest resources"
-  echo "help - list all commands"
+  echo "  install x.y.z - install x.y.x version"
+  echo "  use x.y.z - use x.y.x version"
+  echo "  ls-remote - list all remote versions"
+  echo "  ls - list all locale versions"
+  echo "  update - update juliavm with latest resources"
+  echo "  help - list all commands"
 }
 
 if [[ "$1" == 'ls-remote' ]]; then
@@ -103,9 +103,9 @@ elif [[ "$1" == 'use' ]]; then
 elif [[ "$1" == 'update' ]]; then
   juliavm_update
 elif [[ "$1" == *"help"* ]]; then
-  echo "Commands avaliable are: "
+  echo "Commands available are: "
   juliavm_help
 else 
-  echo "Command not found, commands avaliable are: "
+  echo "Command not found, commands available are: "
   juliavm_help
 fi
