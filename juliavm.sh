@@ -29,6 +29,16 @@ juliavm_install(){
   fi
 }
 
+juliavm_use(){
+  echo 'oi'
+}
+
+juliavm_ls(){
+  DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+  DIR="$DIR/dists/"
+  eval 'ls -1 $DIR'
+}
+
 juliavm_version_is_available(){
   major=${1:0:3}'/'
   file='julia-'$1'-linux-x86_64'
@@ -44,6 +54,7 @@ juliavm_version_is_available(){
 
 juliavm_help() {
   echo "install x.y.z - install x.y.x version"
+  echo "use x.y.z - use x.y.x version"
   echo "ls-remote - list all remote versions"
   echo "ls - list all locale versions"
   echo "help - list all commands"
@@ -51,11 +62,14 @@ juliavm_help() {
 
 if [[ "$1" == 'ls-remote' ]]; then
   juliavm_ls_remote
-elif [[ "$1" == "install" ]]; then
+elif [[ "$1" == 'install' ]]; then
   if  juliavm_version_is_available $2 ; then
     juliavm_install $2
   fi
-  
+elif [[ "$1" == 'ls' ]]; then
+  juliavm_ls $2
+elif [[ "$1" == 'use' ]]; then
+  juliavm_use $2
 elif [[ "$1" == *"help"* ]]; then
   echo "Commands avaliable are: "
   juliavm_help
