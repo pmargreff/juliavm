@@ -88,7 +88,15 @@ juliavm_help() {
   echo "  ls-remote - list all remote versions"
   echo "  ls - list all locale versions"
   echo "  update - update juliavm with latest resources"
+  echo "  uninstall - uninstall juliavm and all julia versions downloaded inside juliavm"
   echo "  help - list all commands"
+}
+
+juliavm_uninstall(){
+  DIR=$( cd "$( dirname "$0" )" && pwd )
+  sed -i /'alias julia='/d  ~/.bashrc
+  sed -i /'alias juliavm='/d  ~/.bashrc
+  eval "rm -r ~/.juliavm"  
 }
 
 if [[ "$1" == 'ls-remote' ]]; then
@@ -105,6 +113,8 @@ elif [[ "$1" == 'use' ]]; then
   fi
 elif [[ "$1" == 'update' ]]; then
   juliavm_update
+elif [[ "$1" == 'uninstall' ]]; then
+  juliavm_uninstall
 elif [[ "$1" == *"help"* ]]; then
   echo "Commands available are: "
   juliavm_help

@@ -24,6 +24,7 @@ Run the script for install:
  - `juliavm install x.y.z` - install x.y.x version
  - `juliavm use x.y.z` - use x.y.x version
  - `juliavm update` - update **juliavm** with latest resources
+ - `juliavm uninstall` - uninstall juliavm and all julia versions downloaded inside juliavm
  - `juliavm help` - list all available commands
 
 ## Architectures
