@@ -21,12 +21,15 @@ Run the script for install:
 
  - `juliavm ls-remote` - list all remote versions 
  - `juliavm ls` - list all locale versions
- - `juliavm install x.y.z` - install x.y.x version
- - `juliavm use x.y.z` - use x.y.x version
+ - `juliavm install x.y.z [-ARCHITECTURE]` - install x.y.x version, ARCHITECTURE is an optional param
+ - `juliavm use x.y.z [-ARCHITECTURE]` - use x.y.x version, ARCHITECTURE is an optional param
  - `juliavm update` - update **juliavm** with latest resources
  - `juliavm uninstall` - uninstall juliavm and all julia versions downloaded inside juliavm
  - `juliavm help` - list all available commands
 
 ## Architectures
-
-Only unix 64 bits version is supported right now, in some nearby moment in the future it will be update for 32 bits and OSx versions. 
+ - `-x64` - unix 64 bits
+ - `-x86` - unix 32 bits
+ - If you don't pass the architecture unix 64 bits will be assumed
+  
+Only Unix (32 and 64 bits) version is supported right now, in some nearby moment in the future it will be update for be compatible with OSX. 
