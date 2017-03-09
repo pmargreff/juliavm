@@ -7,6 +7,10 @@ fi
 if [ -z "$JULIAVM_JULIA_AWS" ]; then
   export JULIAVM_JULIA_AWS="https://julialang.s3.amazonaws.com/bin/linux/x64/"
 fi
+if [ -z "$JULIAVM_WORK_DIR" ]; then
+  export JULIAVM_WORK_DIR=$( cd "$( dirname "$0" )" && pwd )
+fi
+
 
 juliavm_ls_remote() {
   echo "List of versions available for julia language:"
@@ -14,12 +18,10 @@ juliavm_ls_remote() {
 }
 
 juliavm_install(){
-  major=${1:0:3}'/'
-  file='julia-'$1'-linux-x86_64'
-  url=$JULIAVM_JULIA_AWS$major$file'.tar.gz'
-  DIR=$(juliavm_get_work_dir)
+  file=$(juliavm_get_file_name $1)
+  url=$(juliavm_get_download_url $1)
 
-  JULIAVM_DISTS_DIR=$DIR'/dists/'$1
+  JULIAVM_DISTS_DIR=$JULIAVM_WORK_DIR'/dists/'$1
   
   if [ -d "$JULIAVM_DISTS_DIR" ]; then
     echo $JULIAVM_DISTS_DIR' already exist'
@@ -33,23 +35,20 @@ juliavm_install(){
 }
 
 juliavm_use(){
-  DIR=$(juliavm_get_work_dir)
-  DIR="$DIR/dists/$1/bin/julia"
+  EXEC_PATH="$JULIAVM_WORK_DIR/dists/$1/bin/julia"
   sed -i /'alias julia='/d  ~/.bashrc
   echo "You're now using Julia $1"
-  echo "alias julia='$DIR'" >> ~/.bashrc && exec bash
+  echo "alias julia='$EXEC_PATH'" >> ~/.bashrc && exec bash
 }
 
 juliavm_ls(){
-  DIR=$(juliavm_get_work_dir)
-  DIR="$DIR/dists/"
-  eval 'ls -1 $DIR'
+  DISTS_DIR="$JULIAVM_WORK_DIR/dists/"
+  eval 'ls -1 $DISTS_DIR'
 }
 
 juliavm_version_is_available_locale(){
-  DIR=$(juliavm_get_work_dir)
-  DIR="$DIR/dists/$1"
-  if [ -d "$DIR" ]; then
+  VERSION_DIR="$JULIAVM_WORK_DIR/dists/$1"
+  if [ -d "$VERSION_DIR" ]; then
     return 0
   else 
     echo "Version isn't available, all version ready for use are: "
@@ -59,9 +58,8 @@ juliavm_version_is_available_locale(){
 }
 
 juliavm_version_is_available_remote(){
-  major=${1:0:3}'/'
-  file='julia-'$1'-linux-x86_64'
-  url=$JULIAVM_JULIA_AWS$major$file'.tar.gz'
+  file=$(juliavm_get_file_name $1)
+  url=$(juliavm_get_download_url $1)
   if eval "curl --output /dev/null --silent --head --fail \"$url\""; then
     return 0
   else
@@ -72,15 +70,10 @@ juliavm_version_is_available_remote(){
 }
 
 juliavm_update(){
-  DIR=$(juliavm_get_work_dir)
-  eval 'cd $DIR && git pull origin master'
-  eval 'mv $DIR/juliavm.sh $DIR/juliavm'
+  eval 'cd $JULIAVM_WORK_DIR && git pull origin master'
+  eval 'mv $JULIAVM_WORK_DIR/juliavm.sh $DIR/juliavm'
 }
 
-juliavm_get_work_dir(){
-  DIR=$( cd "$( dirname "$0" )" && pwd )
-  echo $DIR
-}
 
 juliavm_help() {
   echo "  install x.y.z - install x.y.x version"
@@ -97,6 +90,18 @@ juliavm_uninstall(){
   sed -i /'alias julia='/d  ~/.bashrc
   sed -i /'alias juliavm='/d  ~/.bashrc
   eval "rm -r ~/.juliavm"  
+}
+
+juliavm_get_file_name(){
+  file='julia-'$1'-linux-x86_64'
+  echo $file
+}
+
+juliavm_get_download_url(){
+  file=$(juliavm_get_file_name $1)
+  major=${1:0:3}'/'
+  url=$JULIAVM_JULIA_AWS$major$file'.tar.gz'
+  echo $url
 }
 
 if [[ "$1" == 'ls-remote' ]]; then
