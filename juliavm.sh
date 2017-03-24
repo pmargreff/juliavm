@@ -1,4 +1,4 @@
-#!/bin/bash          
+#!/bin/bash
 
 # Setup mirror location if not already set
 if [ -z "$JULIAVM_JULIA_REPO" ]; then
@@ -20,14 +20,16 @@ juliavm_ls_remote() {
 juliavm_install(){
   file=$(juliavm_get_file_name $1 $2)
   url=$(juliavm_get_download_url $1 $2)
-  
+
   dists_dir=$(juliavm_get_dist_dir $1 $2)
-  
+
   if [ -d "$dists_dir" ]; then
     echo $dists_dir' already exist'
   else
     eval 'mkdir $dists_dir'
-    eval 'wget $url -P $dists_dir'
+    eval 'cd $dists_dir'
+    eval 'curl -O $url'
+    eval 'cd $JULIAVM_WORK_DIR'
     eval 'tar -xvzf $dists_dir/$file.tar.gz -C $dists_dir --strip-components=1'
     eval 'rm $dists_dir/$file.tar.gz'
   fi
@@ -60,10 +62,10 @@ juliavm_version_is_available_locale(){
   else
     VERSION_DIR="$JULIAVM_WORK_DIR/dists/$1"
   fi
-  
+
   if [ -d "$VERSION_DIR" ]; then
     return 0
-  else 
+  else
     echo "Version isn't available, all version ready for use are: "
     juliavm_ls
     return 1
@@ -99,7 +101,7 @@ juliavm_get_file_name(){
 juliavm_get_download_url(){
   file=$(juliavm_get_file_name $1 $2)
   major=${1:0:3}'/'
-  
+
   if [[ "$2" == '-x86' ]]; then
     arch='x86/'
     url=$JULIAVM_JULIA_AWS$arch$major$file'.tar.gz'
@@ -153,7 +155,7 @@ juliavm_uninstall(){
   DIR=$( cd "$( dirname "$0" )" && pwd )
   sed -i /'alias julia='/d  ~/.bashrc
   sed -i /'alias juliavm='/d  ~/.bashrc
-  eval "rm -r ~/.juliavm"  
+  eval "rm -r ~/.juliavm"
 }
 
 if [[ "$1" == 'ls-remote' ]]; then
@@ -175,7 +177,7 @@ elif [[ "$1" == 'uninstall' ]]; then
 elif [[ "$1" == *"help"* ]]; then
   echo "Commands available are: "
   juliavm_help
-else 
+else
   echo "Command not found, commands available are: "
   juliavm_help
 fi
