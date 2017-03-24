@@ -1,5 +1,7 @@
 #!/bin/bash
 
+{ # this ensures the entire script is downloaded #
+
 # Setup mirror location if not already set
 if [ -z "$JULIAVM_JULIA_REPO" ]; then
   export JULIAVM_JULIA_REPO="https://github.com/JuliaLang/julia"
@@ -11,10 +13,13 @@ if [ -z "$JULIAVM_WORK_DIR" ]; then
   export JULIAVM_WORK_DIR=$( cd "$( dirname "$0" )" && pwd )
 fi
 
+juliavm_has(){
+  type "${1-}" > /dev/null 2>&1
+}
 
 juliavm_ls_remote() {
   echo "List of versions available for julia language:"
-  eval "git ls-remote -t $JULIAVM_JULIA_REPO | cut -d '/' -f 3 | cut -c 1 --complement |cut -d '^' -f 1"
+  command git ls-remote -t $JULIAVM_JULIA_REPO | cut -d '/' -f 3 | cut -c 1 --complement |cut -d '^' -f 1
 }
 
 juliavm_install(){
@@ -26,12 +31,12 @@ juliavm_install(){
   if [ -d "$dists_dir" ]; then
     echo $dists_dir' already exist'
   else
-    eval 'mkdir $dists_dir'
-    eval 'cd $dists_dir'
-    eval 'curl -O $url'
-    eval 'cd $JULIAVM_WORK_DIR'
-    eval 'tar -xvzf $dists_dir/$file.tar.gz -C $dists_dir --strip-components=1'
-    eval 'rm $dists_dir/$file.tar.gz'
+    command mkdir $dists_dir
+    command cd $dists_dir
+    command curl -O $url
+    command cd $JULIAVM_WORK_DIR
+    command tar -xvzf $dists_dir/$file.tar.gz -C $dists_dir --strip-components=1
+    command rm $dists_dir/$file.tar.gz
   fi
   juliavm_use $1
 }
@@ -51,7 +56,7 @@ juliavm_use(){
 
 juliavm_ls(){
   DISTS_DIR="$JULIAVM_WORK_DIR/dists/"
-  eval 'ls -1 $DISTS_DIR'
+  command ls -1 $DISTS_DIR
 }
 
 juliavm_version_is_available_locale(){
@@ -132,8 +137,8 @@ juliavm_get_dist_dir(){
 
 
 juliavm_update(){
-  eval 'cd $JULIAVM_WORK_DIR && git pull origin master'
-  eval 'mv $JULIAVM_WORK_DIR/juliavm.sh $DIR/juliavm'
+  command cd $JULIAVM_WORK_DIR && git pull origin master
+  command mv $JULIAVM_WORK_DIR/juliavm.sh $DIR/juliavm
 }
 
 
@@ -155,7 +160,7 @@ juliavm_uninstall(){
   DIR=$( cd "$( dirname "$0" )" && pwd )
   sed -i /'alias julia='/d  ~/.bashrc
   sed -i /'alias juliavm='/d  ~/.bashrc
-  eval "rm -r ~/.juliavm"
+  command rm -r ~/.juliavm
 }
 
 if [[ "$1" == 'ls-remote' ]]; then
@@ -181,3 +186,5 @@ else
   echo "Command not found, commands available are: "
   juliavm_help
 fi
+
+}
