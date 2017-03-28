@@ -10,7 +10,8 @@ if [ -z "$JULIAVM_JULIA_AWS" ]; then
   export JULIAVM_JULIA_AWS="https://julialang.s3.amazonaws.com/bin/linux/"
 fi
 if [ -z "$JULIAVM_WORK_DIR" ]; then
-  export JULIAVM_WORK_DIR=$( cd "$( dirname "$0" )" && pwd )
+  export JULIAVM_WORK_DIR
+  JULIAVM_WORK_DIR=$( cd "$( dirname "$0" )" && pwd )
 fi
 
 juliavm_has(){
@@ -23,20 +24,20 @@ juliavm_ls_remote() {
 }
 
 juliavm_install(){
-  file=$(juliavm_get_file_name $1 $2)
-  url=$(juliavm_get_download_url $1 $2)
+  file=$(juliavm_get_file_name "$1" "$2")
+  url=$(juliavm_get_download_url "$1" "$2")
 
-  dists_dir=$(juliavm_get_dist_dir $1 $2)
+  dists_dir=$(juliavm_get_dist_dir "$1" "$2")
 
   if [ -d "$dists_dir" ]; then
     echo $dists_dir' already exist'
   else
-    command mkdir $dists_dir
-    command cd $dists_dir
-    command curl -O $url
-    command cd $JULIAVM_WORK_DIR
-    command tar -xvzf $dists_dir/$file.tar.gz -C $dists_dir --strip-components=1
-    command rm $dists_dir/$file.tar.gz
+    command mkdir "$dists_dir"
+    command cd "$dists_dir"
+    command curl -O "$url"
+    command cd "$JULIAVM_WORK_DIR"
+    command tar -xvzf "$dists_dir"/"$file".tar.gz -C "$dists_dir" --strip-components=1
+    command rm "$dists_dir"/"$file".tar.gz
   fi
   juliavm_use $1
 }
@@ -78,8 +79,8 @@ juliavm_version_is_available_locale(){
 }
 
 juliavm_version_is_available_remote(){
-  file=$(juliavm_get_file_name $1 $2)
-  url=$(juliavm_get_download_url $1 $2)
+  file=$(juliavm_get_file_name "$1" "$2")
+  url=$(juliavm_get_download_url "$1" "$2")
   if eval "curl --output /dev/null --silent --head --fail \"$url\""; then
     return 0
   else
@@ -137,8 +138,8 @@ juliavm_get_dist_dir(){
 
 
 juliavm_update(){
-  command cd $JULIAVM_WORK_DIR && git pull origin master
-  command mv $JULIAVM_WORK_DIR/juliavm.sh $DIR/juliavm
+  command cd "$JULIAVM_WORK_DIR && git pull origin master"
+  command mv "$JULIAVM_WORK_DIR/juliavm.sh" "$DIR/juliavm"
 }
 
 
@@ -166,14 +167,14 @@ juliavm_uninstall(){
 if [[ "$1" == 'ls-remote' ]]; then
   juliavm_ls_remote
 elif [[ "$1" == 'install' ]]; then
-  if  juliavm_version_is_available_remote $2 $3; then
-    juliavm_install $2 $3
+  if  juliavm_version_is_available_remote "$2" "$3"; then
+    juliavm_install "$2" "$3"
   fi
 elif [[ "$1" == 'ls' ]]; then
-  juliavm_ls $2
+  juliavm_ls "$2"
 elif [[ "$1" == 'use' ]]; then
-  if  juliavm_version_is_available_locale $2 $3; then
-    juliavm_use $2 $3
+  if  juliavm_version_is_available_locale "$2" "$3"; then
+    juliavm_use "$2" "$3"
   fi
 elif [[ "$1" == 'update' ]]; then
   juliavm_update
