@@ -158,11 +158,24 @@ juliavm_help() {
 }
 
 juliavm_uninstall(){
+  echo 'Uninstalling ...'
+  if  [[ "$1" == '--hard' ]]; then
+    echo 'Deleting all Julia packages ...'
+    juliavm_uninstall_packages
+  else
+    echo 'Julia packages will be kept ...'
+  fi
+
   DIR=$( cd "$( dirname "$0" )" && pwd )
   sed -i /'alias julia='/d  ~/.bashrc
   sed -i /'alias juliavm='/d  ~/.bashrc
   command rm -r ~/.juliavm
 }
+
+juliavm_uninstall_packages(){
+  command rm -r ~/.julia
+}
+
 
 if [[ "$1" == 'ls-remote' ]]; then
   juliavm_ls_remote
@@ -179,7 +192,7 @@ elif [[ "$1" == 'use' ]]; then
 elif [[ "$1" == 'update' ]]; then
   juliavm_update
 elif [[ "$1" == 'uninstall' ]]; then
-  juliavm_uninstall
+  juliavm_uninstall $2
 elif [[ "$1" == *"help"* ]]; then
   echo "Commands available are: "
   juliavm_help
