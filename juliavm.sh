@@ -150,9 +150,11 @@ juliavm_help() {
   echo "  ls                list all locale versions"
   echo "  update            update juliavm with latest resources"
   echo "  uninstall         uninstall juliavm and all julia versions downloaded inside juliavm"
+  echo "      --hard        uninstall all Julia packages, if isn't passed with uninstall command. soft uninstall will be used"
+  echo " "
   echo "  help              list all commands"
   echo " "
-  echo "ARCHITECTURE options (if you don't pass unix 64 bits will be assumed):"
+  echo "ARCHITECTURE options (if you don't pass unix 64 bits will be used):"
   echo "  -x64    unix 64 bits"
   echo "  -x86    unix 32 bits"
 }
@@ -173,7 +175,7 @@ juliavm_uninstall(){
 }
 
 juliavm_uninstall_packages(){
-  command rm -r ~/.julia
+  command rm -rf ~/.julia
 }
 
 
