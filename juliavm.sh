@@ -5,8 +5,7 @@
 # Setup mirror location if not already set
 export JULIAVM_JULIA_REPO="https://github.com/JuliaLang/julia"
 export JULIAVM_JULIA_AWS="https://julialang-s3.julialang.org/bin/linux/"
-export JULIAVM_WORK_DIR
-JULIAVM_WORK_DIR=$( cd "$( dirname "$0" )" && pwd )
+export JULIAVM_WORK_DIR=$( cd "$( dirname "$0" )" && pwd )
 
 juliavm_echo() {
   command printf %s\\n "$*" 2>/dev/null || {
