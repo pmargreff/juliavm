@@ -143,7 +143,7 @@ juliavm_get_dist_dir(){
 
 juliavm_update(){
   command cd "$JULIAVM_WORK_DIR && git pull origin master"
-  command mv "$JULIAVM_WORK_DIR/juliavm.sh" "$DIR/juliavm"
+  command mv "$JULIAVM_WORK_DIR/juliavm.sh" "$JULIAVM_WORK_DIR/juliavm"
 }
 
 
