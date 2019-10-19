@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 { # this ensures the entire script is downloaded #
 
@@ -45,6 +45,11 @@ juliavm_install(){
   fi
   juliavm_echo "Julia "$1" installed!"
   juliavm_use $1
+  
+  if [[ :$PATH: != *":$HOME/.local/bin:"* ]] ; then
+    juliavm_echo "$HOME/.local/bin was not found in your PATH!"
+    juliavm_echo "You won't be able to run julia (once you close this terminal)"
+  fi
 }
 
 juliavm_use(){
@@ -55,9 +60,8 @@ juliavm_use(){
   else
     EXEC_PATH="$JULIAVM_WORK_DIR/dists/$1/bin/julia"
   fi
-  sed -i /'alias julia='/d  ~/.bashrc
+  ln -nsf $EXEC_PATH $HOME/.local/bin/julia
   juliavm_echo "You're using Julia $1$2"
-  juliavm_echo "alias julia='$EXEC_PATH'" >> ~/.bashrc && exec bash
 }
 
 juliavm_ls(){
@@ -174,9 +178,9 @@ juliavm_uninstall(){
   fi
 
   DIR=$( cd "$( dirname "$0" )" && pwd )
-  sed -i /'alias julia='/d  ~/.bashrc
-  sed -i /'alias juliavm='/d  ~/.bashrc
-  command rm -r ~/.juliavm
+
+  command test -f ${HOME}/.local/bin/julia && command rm ${HOME}/.local/bin/julia
+  command test -f ${HOME}/.local/bin/juliavm && command rm ${HOME}/.local/bin/juliavm
   command unset JULIAVM_JULIA_REPO
   command unset JULIAVM_JULIA_AWS
   command unset JULIAVM_WORK_DIR
