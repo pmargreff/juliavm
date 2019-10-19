@@ -179,8 +179,8 @@ juliavm_uninstall(){
 
   DIR=$( cd "$( dirname "$0" )" && pwd )
 
-  command test -f ${HOME}/.local/bin/julia && command rm ${HOME}/.local/bin/julia
-  command test -f ${HOME}/.local/bin/juliavm && command rm ${HOME}/.local/bin/juliavm
+  command test -h ${HOME}/.local/bin/julia && command rm ${HOME}/.local/bin/julia
+  command test -h ${HOME}/.local/bin/juliavm && command rm ${HOME}/.local/bin/juliavm
   command unset JULIAVM_JULIA_REPO
   command unset JULIAVM_JULIA_AWS
   command unset JULIAVM_WORK_DIR
