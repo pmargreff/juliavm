@@ -1,12 +1,12 @@
-#!/bin/bash
+#! /bin/bash
 
 { # this ensures the entire script is downloaded #
+PATH_DIR="$HOME/.local/bin"
 
 # Setup mirror location if not already set
 export JULIAVM_JULIA_REPO="https://github.com/JuliaLang/julia"
 export JULIAVM_JULIA_AWS="https://julialang-s3.julialang.org/bin/linux/"
-export JULIAVM_WORK_DIR
-JULIAVM_WORK_DIR=$( cd "$( dirname "$0" )" && pwd )
+export JULIAVM_WORK_DIR=$HOME/.juliavm
 
 juliavm_echo() {
   command printf %s\\n "$*" 2>/dev/null || {
@@ -28,23 +28,27 @@ juliavm_install(){
   url=$(juliavm_get_download_url "$1" "$2")
 
   dists_dir=$(juliavm_get_dist_dir "$1" "$2")
+  dists_file=$dists_dir/$file.tar.gz
 
-  if [ -d "$dists_dir" ]; then
-    juliavm_echo $dists_dir' already exist'
-  else
-    juliavm_echo 'Creating directories ...'
-    command mkdir "$dists_dir"
-    command cd "$dists_dir"
-    juliavm_echo 'Downlowding files ...'
-    command curl -O "$url"
-    command cd "$JULIAVM_WORK_DIR"
-    juliavm_echo 'Unzip files ...'
-    command tar -xvzf "$dists_dir"/"$file".tar.gz -C "$dists_dir" --strip-components=1
-    juliavm_echo 'Cleaning ...'
-    command rm "$dists_dir"/"$file".tar.gz
-  fi
+  command mkdir -p "$dists_dir"
+
+  curdir=$(pwd)
+
+  command cd "$dists_dir"
+  juliavm_echo 'Downlowding files ...'
+  command curl -O "$url"
+  command cd "$JULIAVM_WORK_DIR"
+  juliavm_echo 'Unzip files ...'
+  command tar -xvzf $dists_file -C "$dists_dir" --strip-components=1
+  juliavm_echo 'Cleaning ...'
+  command test -f $dists_file && command rm $dists_file
   juliavm_echo "Julia "$1" installed!"
   juliavm_use $1
+  
+  if [[ :$PATH: != *":$PATH_DIR:"* ]] ; then
+    juliavm_echo "$PATH_DIR was not found in your PATH!"
+    juliavm_echo "You won't be able to run julia (once you close this terminal)"
+  fi
 }
 
 juliavm_use(){
@@ -55,9 +59,8 @@ juliavm_use(){
   else
     EXEC_PATH="$JULIAVM_WORK_DIR/dists/$1/bin/julia"
   fi
-  sed -i /'alias julia='/d  ~/.bashrc
+  ln -nsf $EXEC_PATH $PATH_DIR/julia
   juliavm_echo "You're using Julia $1$2"
-  juliavm_echo "alias julia='$EXEC_PATH'" >> ~/.bashrc && exec bash
 }
 
 juliavm_ls(){
@@ -174,9 +177,10 @@ juliavm_uninstall(){
   fi
 
   DIR=$( cd "$( dirname "$0" )" && pwd )
-  sed -i /'alias julia='/d  ~/.bashrc
-  sed -i /'alias juliavm='/d  ~/.bashrc
-  command rm -r ~/.juliavm
+
+  command test -h $PATH_DIR/julia && command rm $PATH_DIR/julia
+  command test -f $PATH_DIR/juliavm && command rm $PATH_DIR/juliavm
+  command test -d $HOME/.juliavm && command rm -r $HOME/.juliavm
   command unset JULIAVM_JULIA_REPO
   command unset JULIAVM_JULIA_AWS
   command unset JULIAVM_WORK_DIR
