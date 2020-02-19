@@ -40,7 +40,7 @@ juliavm_install(){
   command curl -O "$url"
   command cd "$JULIAVM_WORK_DIR"
   juliavm_echo 'Unzip files ...'
-  command tar -xvzf $dists_file -C "$dists_dir" --strip-components=1
+  command tar -xzf $dists_file --totals -C "$dists_dir" --strip-components=1
   juliavm_echo 'Cleaning ...'
   command test -f $dists_file && command rm $dists_file
   juliavm_echo "Julia "$1" installed!"
