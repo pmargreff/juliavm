@@ -1,7 +1,8 @@
 #! /bin/bash
 
 { # this ensures the entire script is downloaded #
-PATH_DIR="$HOME/.local/bin"
+BINDIR="$HOME/.local/bin"
+MANDIR="$HOME/.local/man/man1"
 
 # Setup mirror location if not already set
 export JULIAVM_JULIA_REPO="https://github.com/JuliaLang/julia"
@@ -39,27 +40,28 @@ juliavm_install(){
   command curl -O "$url"
   command cd "$JULIAVM_WORK_DIR"
   juliavm_echo 'Unzip files ...'
-  command tar -xvzf $dists_file -C "$dists_dir" --strip-components=1
+  command tar -xzf $dists_file --totals -C "$dists_dir" --strip-components=1
   juliavm_echo 'Cleaning ...'
   command test -f $dists_file && command rm $dists_file
   juliavm_echo "Julia "$1" installed!"
   juliavm_use $1
   
-  if [[ :$PATH: != *":$PATH_DIR:"* ]] ; then
-    juliavm_echo "$PATH_DIR was not found in your PATH!"
+  if [[ :$PATH: != *":$BINDIR:"* ]] ; then
+    juliavm_echo "$BINDIR was not found in your PATH!"
     juliavm_echo "You won't be able to run julia (once you close this terminal)"
   fi
 }
 
 juliavm_use(){
   if [[ "$2" == '-x86' ]]; then
-    EXEC_PATH="$JULIAVM_WORK_DIR/dists/$1$2/bin/julia"
+    VERSION_DIR="$JULIAVM_WORK_DIR/dists/$1$2"
   elif [[ "$2" == '-64' ]]; then
-    EXEC_PATH="$JULIAVM_WORK_DIR/dists/$1/bin/julia"
+    VERSION_DIR="$JULIAVM_WORK_DIR/dists/$1"
   else
-    EXEC_PATH="$JULIAVM_WORK_DIR/dists/$1/bin/julia"
+    VERSION_DIR="$JULIAVM_WORK_DIR/dists/$1"
   fi
-  ln -nsf $EXEC_PATH $PATH_DIR/julia
+  ln -nsf $VERSION_DIR/bin/julia $BINDIR/julia
+  ln -nsf $VERSION_DIR/share/man/man1/julia.1 $MANDIR/julia.1
   juliavm_echo "You're using Julia $1$2"
 }
 
@@ -178,8 +180,9 @@ juliavm_uninstall(){
 
   DIR=$( cd "$( dirname "$0" )" && pwd )
 
-  command test -h $PATH_DIR/julia && command rm $PATH_DIR/julia
-  command test -f $PATH_DIR/juliavm && command rm $PATH_DIR/juliavm
+  command test -h $BINDIR/julia && command rm $BINDIR/julia
+  command test -h $MANDIR/julia.1 && command rm $MANDIR/julia.1
+  command test -f $BINDIR/juliavm && command rm $BINDIR/juliavm
   command test -d $HOME/.juliavm && command rm -r $HOME/.juliavm
   command unset JULIAVM_JULIA_REPO
   command unset JULIAVM_JULIA_AWS
