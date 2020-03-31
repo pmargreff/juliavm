@@ -32,4 +32,4 @@ Run the script for install:
  - `-x86` - unix 32 bits
  - If you don't pass the architecture unix 64 bits will be used.
 
-Unix (32 and 64 bits) version is supported right now, in some nearby moment in the future it will be update for be compatible with OSX.
+Unix (32 and 64 bits) version is supported right now, feel free to add OSX compatibility or use [asdf](https://github.com/asdf-vm/asdf) instead.
