@@ -3,11 +3,12 @@
 { # this ensures the entire script is downloaded #
 BINDIR="$HOME/.local/bin"
 MANDIR="$HOME/.local/man/man1"
+INSTALL_DIR="$HOME/.local/share/juliavm"
 
 # Setup mirror location if not already set
 export JULIAVM_JULIA_REPO="https://github.com/JuliaLang/julia"
 export JULIAVM_JULIA_AWS="https://julialang-s3.julialang.org/bin/linux/"
-export JULIAVM_WORK_DIR=$HOME/.juliavm
+export JULIAVM_WORK_DIR="$HOME/.juliavm"
 
 juliavm_echo() {
   command printf %s\\n "$*" 2>/dev/null || {
@@ -45,7 +46,7 @@ juliavm_install(){
   command test -f $dists_file && command rm $dists_file
   juliavm_echo "Julia "$1" installed!"
   juliavm_use $1
-  
+
   if [[ :$PATH: != *":$BINDIR:"* ]] ; then
     juliavm_echo "$BINDIR was not found in your PATH!"
     juliavm_echo "You won't be able to run julia (once you close this terminal)"
@@ -148,8 +149,8 @@ juliavm_get_dist_dir(){
 
 
 juliavm_update(){
-  command cd "$JULIAVM_WORK_DIR && git pull origin master"
-  command mv "$JULIAVM_WORK_DIR/juliavm.sh" "$DIR/juliavm"
+  command cd "$INSTALL_DIR && git pull origin master"
+  command mv "$INSTALL_DIR/juliavm.sh" "$BINDIR/juliavm"
 }
 
 
@@ -183,14 +184,15 @@ juliavm_uninstall(){
   command test -h $BINDIR/julia && command rm $BINDIR/julia
   command test -h $MANDIR/julia.1 && command rm $MANDIR/julia.1
   command test -f $BINDIR/juliavm && command rm $BINDIR/juliavm
-  command test -d $HOME/.juliavm && command rm -r $HOME/.juliavm
+  command test -d $HOME/.juliavm && command rm -rf $HOME/.juliavm
+  command test -d $INSTALL_DIR && command rm -rf $INSTALL_DIR
   command unset JULIAVM_JULIA_REPO
   command unset JULIAVM_JULIA_AWS
   command unset JULIAVM_WORK_DIR
 }
 
 juliavm_uninstall_packages(){
-  command rm -rf ~/.julia
+  command rm -rf $HOME/.julia
 }
 
 
